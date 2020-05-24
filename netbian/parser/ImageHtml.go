@@ -5,18 +5,17 @@ import (
 	"regexp"
 )
 
-const imgUrl = `<a href="(/4k[a-z]+/)"[^>]*>([^<]*)</a>`
-const img = `<img src="(.*?)" alt="(.*?)"`
+const htmlRe = `<a href="(/tupian/[0-9]+.html)" target="_blank"><img src=".*?" alt="(.*?)" />`
 
-func ParseImageList(content []byte) engine.ParserResult {
-	r := regexp.MustCompile(imgUrl)
+func ParseImageHtmlList(content []byte) engine.ParserResult {
+	r := regexp.MustCompile(htmlRe)
 	allSub := r.FindAllSubmatch(content, -1)
 	result := engine.ParserResult{}
 	for _, s := range allSub {
-		result.Items = append(result.Items, "img list"+string(s[2]))
+		result.Items = append(result.Items, "img html"+string(s[2]))
 		result.Requests = append(result.Requests, engine.Request{
 			Url:        "http://pic.netbian.com" + string(s[1]),
-			ParserFunc: ParseImageHtmlList,
+			ParserFunc: ParseImageUrl,
 		})
 	}
 	return result
